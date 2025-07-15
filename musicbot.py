@@ -15,7 +15,7 @@ import tempfile
 
 TOKEN = os.environ["TOKEN"]
 TARGET_GUILD = os.environ["GUILD_ID"]
-COOKIE_STR = os.environ("YOUTUBE_COOKIES")
+COOKIE_STR = os.environ["YOUTUBE_COOKIES"]
 
 with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmpfile:
     tmpfile.write(COOKIE_STR)
