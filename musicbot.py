@@ -9,11 +9,19 @@ import asyncio # NEW
 import urllib.parse as urlparse
 import re
 from discord.ui import View, Button
+import tempfile
 
 # Environment variables for tokens and other sensitive data
 
 TOKEN = os.environ["TOKEN"]
 TARGET_GUILD = os.environ["GUILD_ID"]
+COOKIE_STR = os.environ("YOUTUBE_COOKIES")
+
+with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmpfile:
+    tmpfile.write(COOKIE_STR)
+    tmpfile_path = tmpfile.name
+
+
 GUILD_ID = discord.Object(id=TARGET_GUILD)
 
 # Create the structure for queueing songs - Dictionary of queues
@@ -159,6 +167,7 @@ async def play(interaction: discord.Interaction, song_query: str):
         "noplaylist": False,
         "youtube_include_dash_manifest": False,
         "youtube_include_hls_manifest": False,
+        "cookiefile": tmpfile_path
     }
 
     sanitized_input = normalize_youtube_url(song_query)
