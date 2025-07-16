@@ -167,7 +167,7 @@ async def play(interaction: discord.Interaction, song_query: str):
         "noplaylist": False,
         "youtube_include_dash_manifest": False,
         "youtube_include_hls_manifest": False,
-        "cookiefile": 'etc/secrets/youtube_cookies.txt'
+        "cookiefile": '/etc/secrets/youtube_cookies.txt'
     }
 
     sanitized_input = normalize_youtube_url(song_query)
