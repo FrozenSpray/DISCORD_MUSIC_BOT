@@ -12,8 +12,15 @@ from discord.ui import View, Button
 
 # Environment variables for tokens and other sensitive data
 
+cookies_file = "youtube_cookies.txt"
+
 TOKEN = os.environ["TOKEN"]
 TARGET_GUILD = os.environ["GUILD_ID"]
+COOKIES_CONTENT = os.environ.get("YOUTUBE_COOKIES")
+
+if COOKIES_CONTENT:
+    with open(cookies_file, "w", encoding="utf-8") as f:
+        f.write(COOKIES_CONTENT)
 
 GUILD_ID = discord.Object(id=TARGET_GUILD)
 
@@ -165,7 +172,7 @@ async def play(interaction: discord.Interaction, song_query: str):
         "noplaylist": False,
         "youtube_include_dash_manifest": False,
         "youtube_include_hls_manifest": False,
-        "cookiefile": '/etc/secrets/youtube_cookies.txt'
+        "cookiefile": cookies_file
     }
 
     sanitized_input = normalize_youtube_url(song_query)
