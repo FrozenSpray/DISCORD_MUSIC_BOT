@@ -9,18 +9,13 @@ import asyncio # NEW
 import urllib.parse as urlparse
 import re
 from discord.ui import View, Button
-import tempfile
+from dotenv import load_dotenv
+load_dotenv()
 
 # Environment variables for tokens and other sensitive data
 
 TOKEN = os.environ["TOKEN"]
 TARGET_GUILD = os.environ["GUILD_ID"]
-COOKIE_STR = os.environ["YOUTUBE_COOKIES"]
-
-with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmpfile:
-    tmpfile.write(COOKIE_STR)
-    tmpfile_path = tmpfile.name
-
 
 GUILD_ID = discord.Object(id=TARGET_GUILD)
 
@@ -147,6 +142,11 @@ async def stop(interaction: discord.Interaction):
 @bot.tree.command(name="play", description="Play a song or add it to the queue.", guild=GUILD_ID)
 @app_commands.describe(song_query="Search query")
 async def play(interaction: discord.Interaction, song_query: str):
+    
+    if not interaction.user.voice or not interaction.user.voice.channel:
+        await interaction.response.send_message("❌ You must be connected to a voice channel to use this command.", ephemeral=True)
+        return
+    
     await interaction.response.defer()
 
     voice_channel = interaction.user.voice.channel
@@ -167,7 +167,7 @@ async def play(interaction: discord.Interaction, song_query: str):
         "noplaylist": False,
         "youtube_include_dash_manifest": False,
         "youtube_include_hls_manifest": False,
-        "cookiefile": tmpfile_path
+        "cookiefile": 'etc/secrets/youtube_cookies.txt'
     }
 
     sanitized_input = normalize_youtube_url(song_query)
