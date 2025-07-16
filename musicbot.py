@@ -9,8 +9,6 @@ import asyncio # NEW
 import urllib.parse as urlparse
 import re
 from discord.ui import View, Button
-from dotenv import load_dotenv
-load_dotenv()
 
 # Environment variables for tokens and other sensitive data
 
