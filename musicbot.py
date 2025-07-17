@@ -15,13 +15,13 @@ import socketserver
 
 # Environment variables for tokens and other sensitive data
 
-# def run_dummy_server():
-#     PORT = 10000  # Render will detect this as "open"
-#     Handler = http.server.SimpleHTTPRequestHandler
-#     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-#         httpd.serve_forever()
+def run_dummy_server():
+    PORT = 10000  # Render will detect this as "open"
+    Handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        httpd.serve_forever()
 
-# threading.Thread(target=run_dummy_server, daemon=True).start()
+threading.Thread(target=run_dummy_server, daemon=True).start()
 
 cookies_file = "youtube_cookies.txt"
 
@@ -179,7 +179,7 @@ async def play(interaction: discord.Interaction, song_query: str):
         await voice_client.move_to(voice_channel)
 
     ydl_options = {
-        "format": "bestaudio[abr<=96]/bestaudio",
+        "format": "bestaudio/best",
         "noplaylist": False,
         "youtube_include_dash_manifest": False,
         "youtube_include_hls_manifest": False,
