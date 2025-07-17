@@ -9,8 +9,19 @@ import asyncio # NEW
 import urllib.parse as urlparse
 import re
 from discord.ui import View, Button
+import threading
+import http.server
+import socketserver
 
 # Environment variables for tokens and other sensitive data
+
+def run_dummy_server():
+    PORT = 10000  # Render will detect this as "open"
+    Handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        httpd.serve_forever()
+
+threading.Thread(target=run_dummy_server, daemon=True).start()
 
 cookies_file = "youtube_cookies.txt"
 
