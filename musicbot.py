@@ -15,19 +15,19 @@ import socketserver
 
 # Environment variables for tokens and other sensitive data
 
-def run_dummy_server():
-    PORT = 10000  # Render will detect this as "open"
-    Handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        httpd.serve_forever()
+# def run_dummy_server():
+#     PORT = 10000  # Render will detect this as "open"
+#     Handler = http.server.SimpleHTTPRequestHandler
+#     with socketserver.TCPServer(("", PORT), Handler) as httpd:
+#         httpd.serve_forever()
 
-threading.Thread(target=run_dummy_server, daemon=True).start()
+# threading.Thread(target=run_dummy_server, daemon=True).start()
 
 cookies_file = "youtube_cookies.txt"
 
 TOKEN = os.environ["TOKEN"]
 TARGET_GUILD = os.environ["GUILD_ID"]
-COOKIES_CONTENT = os.environ.get("YOUTUBE_COOKIES")
+COOKIES_CONTENT = os.environ["YOUTUBE_COOKIES"]
 
 if COOKIES_CONTENT:
     with open(cookies_file, "w", encoding="utf-8") as f:
