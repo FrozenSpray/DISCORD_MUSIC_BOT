@@ -13,14 +13,13 @@ from discord.ui import View, Button
 cookies_file = "youtube_cookies.txt"
 
 TOKEN = os.environ["TOKEN"]
-TARGET_GUILD = os.environ["GUILD_ID"]
 COOKIES_CONTENT = os.environ["YOUTUBE_COOKIES"]
 
 if COOKIES_CONTENT:
     with open(cookies_file, "w", encoding="utf-8") as f:
         f.write(COOKIES_CONTENT)
 
-GUILD_ID = discord.Object(id=TARGET_GUILD)
+GUILD_ID = discord.Object(id=int(os.environ["GUILD_ID"]))
 
 # Create the structure for queueing songs - Dictionary of queues
 SONG_QUEUES = {}
