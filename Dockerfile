@@ -1,6 +1,12 @@
 FROM python:3.12-slim
 
-RUN apt-get update && apt-get install -y ffmpeg
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libssl-dev \
+    libffi-dev \
+    build-essential \
+    ca-certificates \
+    && apt-get clean
 
 WORKDIR /app
 COPY . /app
