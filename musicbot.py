@@ -146,67 +146,69 @@ async def stop(interaction: discord.Interaction):
 @bot.tree.command(name="play", description="Play a song or add it to the queue.", guild=GUILD_ID)
 @app_commands.describe(song_query="Search query")
 async def play(interaction: discord.Interaction, song_query: str):
-    
-    if not interaction.user.voice or not interaction.user.voice.channel:
-        await interaction.response.send_message("❌ You must be connected to a voice channel to use this command.", ephemeral=True)
-        return
-    
-    await interaction.response.defer()
-
-    voice_channel = interaction.user.voice.channel
-
-    if voice_channel is None:
-        await interaction.followup.send("You must be in a voice channel.")
-        return
-
-    voice_client = interaction.guild.voice_client
-
-    if voice_client is None:
-        voice_client = await voice_channel.connect()
-    elif voice_channel != voice_client.channel:
-        await voice_client.move_to(voice_channel)
-
-    ydl_options = {
-        "format": "bestaudio/best",
-        "noplaylist": False,
-        "youtube_include_dash_manifest": False,
-        "youtube_include_hls_manifest": False,
-        "cookiefile": cookies_file
-    }
-
-    sanitized_input = normalize_youtube_url(song_query)
-
-    if "youtube.com" in sanitized_input or "youtu.be" in sanitized_input:
-        query = sanitized_input  # Clean direct link
-    else:
-        query = "ytsearch1: " + sanitized_input  # Search query
-
-    results = await search_ytdlp_async(query, ydl_options)
-
-    if 'entries' in results:
-        tracks = results['entries']
-        if not tracks:
-            await interaction.followup.send("No results found.")
+    try:
+        if not interaction.user.voice or not interaction.user.voice.channel:
+            await interaction.response.send_message(
+                "❌ You must be connected to a voice channel to use this command.",
+                ephemeral=True
+            )
             return
-        first_track = tracks[0]
-    else:
-        first_track = results
 
-    audio_url = first_track["url"]
-    title = first_track.get("title", "Untitled")
+        await interaction.response.defer()
 
-    guild_id = str(interaction.guild_id)
-    if SONG_QUEUES.get(guild_id) is None:
-        SONG_QUEUES[guild_id] = deque()
+        voice_channel = interaction.user.voice.channel
+        voice_client = interaction.guild.voice_client
 
-    SONG_QUEUES[guild_id].append((audio_url, title))
+        if voice_client is None:
+            voice_client = await voice_channel.connect()
+        elif voice_channel != voice_client.channel:
+            await voice_client.move_to(voice_channel)
 
-    if voice_client.is_playing() or voice_client.is_paused():
-        await interaction.followup.send(f"Added to queue: **{title}**")
-        await show_queue(interaction, SONG_QUEUES[guild_id])
-    else:
-        await interaction.followup.send(f"Now playing: **{title}**")
-        await play_next_song(voice_client, guild_id, interaction.channel)
+        ydl_options = {
+            "format": "bestaudio/best",
+            "noplaylist": False,
+            "youtube_include_dash_manifest": False,
+            "youtube_include_hls_manifest": False,
+            "cookiefile": cookies_file
+        }
+
+        sanitized_input = normalize_youtube_url(song_query)
+
+        if "youtube.com" in sanitized_input or "youtu.be" in sanitized_input:
+            query = sanitized_input
+        else:
+            query = "ytsearch1: " + sanitized_input
+
+        results = await search_ytdlp_async(query, ydl_options)
+
+        if 'entries' in results:
+            tracks = results['entries']
+            if not tracks:
+                await interaction.followup.send("No results found.")
+                return
+            first_track = tracks[0]
+        else:
+            first_track = results
+
+        audio_url = first_track["url"]
+        title = first_track.get("title", "Untitled")
+
+        guild_id = str(interaction.guild_id)
+        if SONG_QUEUES.get(guild_id) is None:
+            SONG_QUEUES[guild_id] = deque()
+
+        SONG_QUEUES[guild_id].append((audio_url, title))
+
+        if voice_client.is_playing() or voice_client.is_paused():
+            await interaction.followup.send(f"Added to queue: **{title}**")
+            await show_queue(interaction, SONG_QUEUES[guild_id])
+        else:
+            await interaction.followup.send(f"Now playing: **{title}**")
+            await play_next_song(voice_client, guild_id, interaction.channel)
+
+    except Exception as e:
+        await interaction.followup.send(f"❌ Something went wrong: `{type(e).__name__}: {e}`")
+        raise  # This ensures Railway logs still show the traceback.
 
 @bot.tree.command(name="queue", description="Show the current music queue.", guild=GUILD_ID)
 async def queue_command(interaction: discord.Interaction):
