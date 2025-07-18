@@ -71,11 +71,6 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # Bot ready-up code
 @bot.event
 async def on_ready():
-    try:
-        synced = await bot.tree.sync(guild=GUILD_ID)
-        print(f"Synced {len(synced)} command(s) for {GUILD_ID.id}")
-    except Exception as e:
-        print(f"Sync failed: {e}")
     print(f"{bot.user} is online!")
 
 
