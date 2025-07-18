@@ -9,10 +9,13 @@ import asyncio # NEW
 import urllib.parse as urlparse
 import re
 from discord.ui import View, Button
+import logging
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 cookies_file = "youtube_cookies.txt"
 
-TOKEN = os.environ["TOKEN"]
 COOKIES_CONTENT = os.environ["YOUTUBE_COOKIES"]
 
 if COOKIES_CONTENT:
@@ -63,15 +66,15 @@ def normalize_youtube_url(input_string: str) -> str:
 
 # Setup of intents. Intents are permissions the bot has on the server
 intents = discord.Intents.default()
-intents.message_content = True
+client = discord.Client(intents=intents)
 
 # Bot setup
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Bot ready-up code
-@bot.event
+@client.event
 async def on_ready():
-    print(f"{bot.user} is online!")
+    print(f"We have logged in as {client.user}")
 
 
 @bot.tree.command(name="skip", description="Skips the current playing song")
@@ -305,4 +308,4 @@ class QueuePaginator(View):
 
 
 # Run the bot
-bot.run(TOKEN)
+client.run(os.environ["TOKEN"])
